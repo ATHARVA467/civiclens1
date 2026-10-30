@@ -116,6 +116,42 @@ for (const t of tables) {
 assert(migration1.includes('CREATE EXTENSION IF NOT EXISTS "vector"'), 'Schema migration enables pgvector extension');
 assert(migration1.includes('ENABLE ROW LEVEL SECURITY'), 'Row Level Security (RLS) enabled across tables');
 
+// 6. Google Sign-In & Authentication Architecture Verification
+console.log('\n6. Validating Google Sign-In & Auth Architecture...');
+const appTsx = fs.readFileSync(path.resolve('./src/App.tsx'), 'utf8');
+assert(appTsx.includes('path="/auth/callback"'), 'Dedicated /auth/callback route registered in App.tsx');
+assert(appTsx.includes('AuthProvider'), 'App wrapped in AuthProvider for persistent session detection');
+
+const authCallbackTsx = fs.readFileSync(path.resolve('./src/pages/citizen/AuthCallbackPage.tsx'), 'utf8');
+assert(authCallbackTsx.includes('exchangeCodeForSession'), 'AuthCallbackPage implements PKCE code exchange');
+assert(authCallbackTsx.includes('exchangeAttemptedRef'), 'AuthCallbackPage guards against duplicate code exchange');
+assert(authCallbackTsx.includes('errorParam'), 'AuthCallbackPage detects and displays cancelled/declined OAuth events');
+
+const authContextTsx = fs.readFileSync(path.resolve('./src/lib/authContext.tsx'), 'utf8');
+assert(authContextTsx.includes('signInWithGoogle'), 'AuthContext provides robust signInWithGoogle method');
+assert(authContextTsx.includes('onAuthStateChange'), 'AuthContext maintains real-time auth state listener');
+assert(authContextTsx.includes('INITIAL_SESSION'), 'AuthContext handles initial session without premature redirect');
+
+// 7. CIVIC CLARITY Design System & Typography Verification
+console.log('\n7. Checking CIVIC CLARITY Design System & Typography...');
+const indexHtml = fs.readFileSync(path.resolve('./index.html'), 'utf8');
+assert(indexHtml.includes('Manrope'), 'Google Fonts loads Manrope for headings');
+assert(indexHtml.includes('Inter'), 'Google Fonts loads Inter for body text');
+assert(indexHtml.includes('Noto+Sans+Kannada'), 'Google Fonts loads Noto Sans Kannada');
+
+const tailwindConfig = fs.readFileSync(path.resolve('./tailwind.config.js'), 'utf8');
+assert(tailwindConfig.includes("'#294563'"), 'Tailwind defines primary navy (#294563)');
+assert(tailwindConfig.includes("'#F8F8F5'"), 'Tailwind defines warm background (#F8F8F5)');
+assert(tailwindConfig.includes("'#E7E9E5'"), 'Tailwind defines subtle border (#E7E9E5)');
+assert(tailwindConfig.includes('heading:'), 'Tailwind defines heading font family');
+
+const landingTsx = fs.readFileSync(path.resolve('./src/pages/citizen/LandingPage.tsx'), 'utf8');
+assert(landingTsx.includes('Government services, made simpler.'), 'Homepage hero contains required headline');
+assert(landingTsx.includes('Understand government services, discover schemes'), 'Homepage hero contains required supporting text');
+assert(landingTsx.includes('AIChatGuidance'), 'Homepage integrates AI Chat Guidance Interface');
+assert(landingTsx.includes('Gruha Lakshmi'), 'Homepage provides Scheme Discovery for Gruha Lakshmi');
+assert(landingTsx.includes('Sakala'), 'Homepage covers Karnataka Sakala Services Act and citizen rights');
+
 console.log('\n----------------------------------------');
 console.log(`VERIFICATION COMPLETE: ALL ${passedTests}/${totalTests} TESTS PASSED.`);
 console.log('----------------------------------------\n');

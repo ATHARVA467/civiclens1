@@ -10,14 +10,14 @@ export default {
       colors: {
         civic: {
           bg: '#F8F8F5',
+          surface: '#F1F3EF',
           card: '#FFFFFF',
           navy: '#294563',
           slate: '#7189A4',
           sage: '#7C9B85',
-          text: '#263442',
-          muted: '#687786',
-          border: '#E3E7E8',
-          surface: '#F0F2EF',
+          text: '#253342',
+          muted: '#687887',
+          border: '#E7E9E5',
           success: '#4F8665',
           warning: '#B9853F',
           critical: '#B85D5D',
@@ -36,7 +36,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'Noto Sans Kannada', 'sans-serif'],
+        sans: ['Inter', 'Noto Sans Kannada', 'system-ui', 'sans-serif'],
+        heading: ['Manrope', 'Inter', 'sans-serif'],
         kannada: ['Noto Sans Kannada', 'Inter', 'sans-serif'],
       },
       boxShadow: {

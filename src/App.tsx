@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { I18nProvider } from '@/lib/i18n';
+import { AuthProvider } from '@/lib/authContext';
 
 // Layouts
 import { CitizenLayout } from '@/components/layout/CitizenLayout';
@@ -12,6 +13,7 @@ import { ReportPage } from '@/pages/citizen/ReportPage';
 import { MyReportsPage } from '@/pages/citizen/MyReportsPage';
 import { TrackReportPage } from '@/pages/citizen/TrackReportPage';
 import { AuthPage } from '@/pages/citizen/AuthPage';
+import { AuthCallbackPage } from '@/pages/citizen/AuthCallbackPage';
 
 // Admin Pages
 import { OverviewPage } from '@/pages/admin/OverviewPage';
@@ -26,36 +28,41 @@ import { AnalyticsPage } from '@/pages/admin/AnalyticsPage';
 export function App() {
   return (
     <I18nProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Citizen Portal (Light Neo-Minimalism Theme) */}
-          <Route element={<CitizenLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/report" element={<ReportPage />} />
-            <Route path="/my-reports" element={<MyReportsPage />} />
-            <Route path="/track/:token" element={<TrackReportPage />} />
-            <Route path="/track" element={<TrackReportPage />} />
-            <Route path="/login" element={<AuthPage isRegister={false} />} />
-            <Route path="/register" element={<AuthPage isRegister={true} />} />
-          </Route>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Dedicated OAuth Callback Route */}
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-          {/* Admin Command Centre (Restrained Dark Theme) */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="/admin/overview" replace />} />
-            <Route path="overview" element={<OverviewPage />} />
-            <Route path="complaints" element={<ComplaintsQueuePage />} />
-            <Route path="map" element={<AdminMapPage />} />
-            <Route path="intelligence" element={<IntelligenceBriefsPage />} />
-            <Route path="duplicates" element={<DuplicatesWorkbenchPage />} />
-            <Route path="hotspots" element={<HotspotsPage />} />
-            <Route path="assignments" element={<AssignmentsWorkflowPage />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-          </Route>
+            {/* Citizen Portal (Light Neo-Minimalism Theme) */}
+            <Route element={<CitizenLayout />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/report" element={<ReportPage />} />
+              <Route path="/my-reports" element={<MyReportsPage />} />
+              <Route path="/track/:token" element={<TrackReportPage />} />
+              <Route path="/track" element={<TrackReportPage />} />
+              <Route path="/login" element={<AuthPage isRegister={false} />} />
+              <Route path="/register" element={<AuthPage isRegister={true} />} />
+            </Route>
 
-          {/* Fallback route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+            {/* Admin Command Centre (Restrained Dark Theme) */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/overview" replace />} />
+              <Route path="overview" element={<OverviewPage />} />
+              <Route path="complaints" element={<ComplaintsQueuePage />} />
+              <Route path="map" element={<AdminMapPage />} />
+              <Route path="intelligence" element={<IntelligenceBriefsPage />} />
+              <Route path="duplicates" element={<DuplicatesWorkbenchPage />} />
+              <Route path="hotspots" element={<HotspotsPage />} />
+              <Route path="assignments" element={<AssignmentsWorkflowPage />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
+            </Route>
+
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </I18nProvider>
   );
 }

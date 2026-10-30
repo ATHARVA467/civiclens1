@@ -12,11 +12,11 @@ export const Card: React.FC<CardProps> = ({
   ...props
 }) => {
   const variantStyles = {
-    default: 'bg-white border border-[#E3E7E8] rounded-xl shadow-soft',
-    elevated: 'bg-white border border-[#E3E7E8] rounded-xl shadow-soft-lg',
-    subtle: 'bg-[#F8F8F5] border border-[#E3E7E8] rounded-xl shadow-soft-sm',
-    admin: 'bg-[#1C2C3D] border border-[#304153] rounded-xl text-[#F3F5F6]',
-    'admin-elevated': 'bg-[#1C2C3D] border border-[#304153] rounded-xl shadow-admin-card text-[#F3F5F6]',
+    default: 'bg-white border border-[#E7E9E5] rounded-2xl shadow-soft',
+    elevated: 'bg-white border border-[#E7E9E5] rounded-2xl shadow-soft-lg',
+    subtle: 'bg-[#F8F8F5] border border-[#E7E9E5] rounded-2xl shadow-soft-sm',
+    admin: 'bg-[#1C2C3D] border border-[#304153] rounded-2xl text-[#F3F5F6]',
+    'admin-elevated': 'bg-[#1C2C3D] border border-[#304153] rounded-2xl shadow-admin-card text-[#F3F5F6]',
   };
 
   return (

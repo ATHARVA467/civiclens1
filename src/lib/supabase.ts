@@ -20,9 +20,17 @@ export const isSupabaseConfigured = Boolean(
   !supabaseAnonKey.includes('placeholder')
 );
 
-// Graceful client fallback
+// Graceful client fallback with robust PKCE OAuth session handling
 export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      },
+    })
   : null;
 
 export interface SupabaseHealth {
