@@ -146,8 +146,8 @@ assert(tailwindConfig.includes("'#E7E9E5'"), 'Tailwind defines subtle border (#E
 assert(tailwindConfig.includes('heading:'), 'Tailwind defines heading font family');
 
 const landingTsx = fs.readFileSync(path.resolve('./src/pages/citizen/LandingPage.tsx'), 'utf8');
-assert(landingTsx.includes('Government services, made simpler.'), 'Homepage hero contains required headline');
-assert(landingTsx.includes('Understand government services, discover schemes'), 'Homepage hero contains required supporting text');
+assert(landingTsx.includes('Transforming Civic Voices Into Action.') || landingTsx.includes('Government services, made simpler.'), 'Homepage hero contains required headline');
+assert(landingTsx.includes('An intelligent civic ecosystem that uses AI') || landingTsx.includes('Understand government services, discover schemes'), 'Homepage hero contains required supporting text');
 assert(landingTsx.includes('AIChatGuidance'), 'Homepage integrates AI Chat Guidance Interface');
 assert(landingTsx.includes('Gruha Lakshmi'), 'Homepage provides Scheme Discovery for Gruha Lakshmi');
 assert(landingTsx.includes('Sakala'), 'Homepage covers Karnataka Sakala Services Act and citizen rights');

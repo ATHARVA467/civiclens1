@@ -5,91 +5,124 @@
 
 @layer base {
   :root {
-    --bg-page: #F8F8F5;
-    --card-surface: #FFFFFF;
-    --surface-secondary: #F1F3EF;
-    --text-primary: #253342;
-    --text-secondary: #687887;
-    --border-subtle: #E7E9E5;
-    --brand-navy: #294563;
-    --brand-slate: #7189A4;
-    --brand-sage: #7C9B85;
-    --color-success: #4F8665;
-    --color-warning: #B9853F;
-    --color-critical: #B85D5D;
+    --bg-page: #070B14;
+    --card-surface: #0E1726;
+    --surface-secondary: #0B0F19;
+    --text-primary: #F3F4F6;
+    --text-secondary: #94A3B8;
+    --border-subtle: #1E293B;
+    --brand-navy: #0F172A;
+    --brand-slate: #38BDF8;
+    --brand-sage: #10B981;
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-critical: #F43F5E;
   }
 
   .dark {
-    --bg-page: #111A24;
-    --card-surface: #1C2C3D;
-    --sidebar-surface: #172332;
-    --text-primary: #F3F5F6;
-    --text-secondary: #A8B5C1;
-    --border-subtle: #304153;
-    --brand-accent: #8EA8C2;
-    --color-success: #7C9B85;
-    --color-warning: #D1A15D;
-    --color-critical: #C77A7A;
+    --bg-page: #070B14;
+    --card-surface: #0E1726;
+    --sidebar-surface: #0B0F19;
+    --text-primary: #F3F4F6;
+    --text-secondary: #94A3B8;
+    --border-subtle: #1E293B;
+    --brand-accent: #38BDF8;
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-critical: #F43F5E;
   }
 
   body {
-    background-color: var(--bg-page);
-    color: var(--text-primary);
+    background-color: #070B14;
+    color: #F3F4F6;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Manrope', 'Inter', sans-serif;
-    letter-spacing: -0.015em;
+    font-family: 'Space Grotesk', 'Manrope', 'Inter', sans-serif;
+    letter-spacing: -0.02em;
   }
 
   /* Accessibility: Focus rings */
   *:focus-visible {
-    outline: 2px solid #294563;
-    outline-offset: 2px;
-  }
-
-  .dark *:focus-visible {
-    outline: 2px solid #8EA8C2;
+    outline: 2px solid #06B6D4;
     outline-offset: 2px;
   }
 }
 
 /* Soft Neumorphism utility styles */
 @layer components {
+  /* Cyber Futuristic 2030 Components */
+  .cyber-glass {
+    background: rgba(14, 23, 38, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+  }
+
+  .cyber-glass-card {
+    background: linear-gradient(135deg, rgba(14, 23, 38, 0.85) 0%, rgba(11, 15, 25, 0.92) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cyber-glass-card:hover {
+    border-color: rgba(6, 182, 212, 0.45);
+    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .cyber-grid-pattern {
+    background-size: 32px 32px;
+    background-image: 
+      linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+  }
+
+  .cyber-glow-text {
+    text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+  }
+
   .soft-card {
-    background-color: #FFFFFF;
-    border: 1px solid #E7E9E5;
-    box-shadow: 2px 3px 12px rgba(41, 69, 99, 0.03), -2px -2px 10px rgba(255, 255, 255, 0.9);
+    background-color: rgba(14, 23, 38, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
     border-radius: 1rem;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .soft-card-elevated {
-    background-color: #FFFFFF;
-    border: 1px solid #E7E9E5;
-    box-shadow: 4px 6px 18px rgba(41, 69, 99, 0.05), -4px -4px 14px rgba(255, 255, 255, 0.95);
+    background-color: rgba(17, 26, 44, 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 24px rgba(6, 182, 212, 0.15);
     border-radius: 1rem;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .soft-button {
-    background-color: #F8F8F5;
-    border: 1px solid #E7E9E5;
-    box-shadow: 2px 2px 6px rgba(41, 69, 99, 0.04), -2px -2px 6px rgba(255, 255, 255, 0.9);
+    background-color: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    color: #F3F4F6;
     transition: all 0.2s ease-in-out;
   }
 
   .soft-button:hover {
-    box-shadow: 1px 1px 3px rgba(41, 69, 99, 0.06), -1px -1px 3px rgba(255, 255, 255, 0.95);
-    background-color: #F1F3EF;
+    border-color: rgba(6, 182, 212, 0.6);
+    background-color: rgba(30, 41, 59, 0.9);
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
   }
 
   .soft-button:active {
-    box-shadow: inset 1px 1px 4px rgba(41, 69, 99, 0.08), inset -1px -1px 4px rgba(255, 255, 255, 0.8);
+    background-color: rgba(15, 23, 42, 1);
   }
 
   /* Admin dark mode components */

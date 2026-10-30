@@ -14,13 +14,16 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Sparkles, 
-  ArrowRight,
-  ShieldCheck,
-  Copy,
-  Check,
-  RotateCw,
-  ExternalLink,
-  ChevronLeft
+  ArrowRight, 
+  ShieldCheck, 
+  Copy, 
+  Check, 
+  RotateCw, 
+  ChevronLeft,
+  Radio,
+  Cpu,
+  Layers,
+  Zap
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -119,7 +122,6 @@ export const ReportPage: React.FC = () => {
     };
 
     try {
-      // 1. If Supabase is connected, persist to Supabase
       if (isSupabaseConfigured && supabase) {
         const { error } = await supabase.from('reports').insert({
           tracking_token: newReport.tracking_token,
@@ -139,7 +141,6 @@ export const ReportPage: React.FC = () => {
         }
       }
 
-      // 2. Save locally so it is immediately visible in /my-reports and /track/:token
       saveReportLocally(newReport);
 
       setTimeout(() => {
@@ -161,77 +162,77 @@ export const ReportPage: React.FC = () => {
     setTimeout(() => setCopiedToken(false), 2000);
   };
 
-  // Confirmation Success View
+  // Futuristic Confirmation Success View
   if (submittedReport) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12">
-        <Card className="p-8 text-center space-y-6 soft-card-elevated border-emerald-500/30">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-200 shadow-soft-sm">
+        <Card className="p-8 text-center space-y-6 cyber-glass-card border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-950/80 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full">
-              Submission Verified • Stage 1: Captured
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 border border-emerald-500/40 px-3 py-1 rounded-full">
+              STAGE 01 COMPLETE: SENSOR REGISTRATION VERIFIED
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#294563]">
+            <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-white">
               Grievance Successfully Registered
             </h1>
-            <p className="text-sm text-[#687786] max-w-md mx-auto">
-              Your public complaint has been logged and queued for AI classification and municipal authority dispatch.
+            <p className="text-sm text-slate-300 max-w-md mx-auto">
+              Your public complaint has been logged and queued for AI classification, priority scoring, and municipal dispatch.
             </p>
           </div>
 
-          {/* Token Card */}
-          <div className="p-6 rounded-2xl bg-[#F8F8F5] border border-[#E3E7E8] space-y-3 max-w-md mx-auto shadow-soft-sm">
-            <div className="text-xs font-bold text-[#687786] uppercase tracking-wider">
-              Your Public Tracking Token
+          {/* Futuristic Token HUD Box */}
+          <div className="p-6 rounded-2xl bg-[#070B14]/90 border border-cyan-500/30 space-y-3 max-w-md mx-auto shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+            <div className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+              Immutable Tracking Token HUD
             </div>
             <div className="flex items-center justify-center gap-3">
-              <span className="font-mono text-2xl sm:text-3xl font-extrabold text-[#294563] tracking-wider select-all">
+              <span className="font-mono text-2xl sm:text-3xl font-extrabold text-white tracking-widest select-all">
                 {submittedReport.tracking_token}
               </span>
               <button
                 type="button"
                 onClick={copyTokenToClipboard}
                 title="Copy token"
-                className="p-2 rounded-lg bg-white border border-[#E3E7E8] hover:bg-[#F0F2EF] text-[#294563] transition-colors"
+                className="p-2 rounded-lg bg-cyan-950/80 border border-cyan-500/40 hover:bg-cyan-900 text-cyan-300 transition-colors"
               >
-                {copiedToken ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
+                {copiedToken ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
               </button>
             </div>
-            <p className="text-[11px] text-[#687786] leading-relaxed">
-              Save this tracking token to check status updates, inspection notes, and photographic proof of resolution.
+            <p className="text-[11px] text-slate-400 font-mono leading-relaxed">
+              Save this tracking token to inspect real-time AI triage, officer notes, and cryptographic resolution proof.
             </p>
           </div>
 
-          {/* Quick Summary */}
-          <div className="p-4 rounded-xl bg-white border border-[#E3E7E8] text-left text-xs space-y-2 max-w-md mx-auto">
-            <div className="flex items-center justify-between border-b border-[#E3E7E8] pb-2">
-              <span className="font-semibold text-[#294563]">{submittedReport.category}</span>
-              <span className="text-[11px] font-mono text-[#687786]">
+          {/* Quick Summary Card */}
+          <div className="p-4 rounded-xl bg-[#070B14]/80 border border-slate-800 text-left text-xs space-y-2 max-w-md mx-auto font-mono">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span className="font-semibold text-cyan-400">{submittedReport.category}</span>
+              <span className="text-[11px] text-slate-400">
                 {new Date(submittedReport.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
-            <div className="font-medium text-[#263442]">{submittedReport.title}</div>
-            <div className="text-[#687786] flex items-center gap-1 text-[11px]">
-              <MapPin className="w-3.5 h-3.5 text-[#7189A4] shrink-0" />
+            <div className="font-medium text-white">{submittedReport.title}</div>
+            <div className="text-slate-400 flex items-center gap-1 text-[11px]">
+              <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
               <span className="truncate">{submittedReport.address}</span>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Button
-              variant="primary"
+              variant="cyber"
               size="lg"
               onClick={() => navigate(`/track/${submittedReport.tracking_token}`)}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-              className="w-full sm:w-auto"
+              rightIcon={<ArrowRight className="w-4 h-4 text-slate-950" />}
+              className="w-full sm:w-auto text-slate-950 font-bold"
             >
               Track This Issue Live
             </Button>
             <Button
-              variant="secondary"
+              variant="cyber-outline"
               size="lg"
               onClick={() => {
                 setSubmittedReport(null);
@@ -251,37 +252,37 @@ export const ReportPage: React.FC = () => {
 
   // Active Report Capture Form
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       {/* Back button & Title */}
-      <div className="mb-6 space-y-1">
+      <div className="space-y-2">
         <Link
           to="/"
-          className="inline-flex items-center gap-1 text-xs font-semibold text-[#294563] hover:underline mb-2"
+          className="inline-flex items-center gap-1 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 hover:underline mb-1"
         >
           <ChevronLeft className="w-4 h-4" />
-          <span>Back to Home</span>
+          <span>Back to Command Overview</span>
         </Link>
-        <div className="flex items-center gap-2 text-xs font-bold text-[#7189A4] uppercase tracking-wider">
-          <Sparkles className="w-4 h-4 text-[#7189A4]" />
-          <span>Rapid 45-60 Second Citizen Grievance Capture</span>
+        <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">
+          <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
+          <span>Rapid 45-Second Citizen Telemetry Intake</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#294563]">
+        <h1 className="text-2xl sm:text-4xl font-extrabold font-heading text-white">
           {t.ctaReport}
         </h1>
-        <p className="text-xs sm:text-sm text-[#687786]">
-          Report civic hazards directly to municipal authorities. No bureaucratic friction or passwords required.
+        <p className="text-xs sm:text-sm text-slate-400">
+          Report civic hazards directly to municipal authorities. Automated geocoding and multimodal AI triage enabled.
         </p>
       </div>
 
-      <Card className="p-6 sm:p-8 soft-card space-y-6">
+      <Card className="p-6 sm:p-8 cyber-glass-card border-cyan-500/25 space-y-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 1. Category Picker */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-                1. Select Problem Category <span className="text-[#B85D5D]">*</span>
+              <label className="block text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                1. Select Problem Domain <span className="text-rose-400">*</span>
               </label>
-              <span className="text-[11px] text-[#7189A4]">8 Official Municipal Domains</span>
+              <span className="text-[11px] text-slate-400 font-mono">8 Municipal Classifications</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {categories.map((cat) => {
@@ -293,14 +294,14 @@ export const ReportPage: React.FC = () => {
                     type="button"
                     onClick={() => setCategory(cat)}
                     className={clsx(
-                      'p-2.5 rounded-lg text-xs font-medium border text-left transition-all min-h-[48px] flex items-center justify-between',
+                      'p-2.5 rounded-xl text-xs font-medium border text-left transition-all min-h-[48px] flex items-center justify-between font-sans',
                       isSelected
-                        ? 'bg-[#294563] text-white border-[#294563] shadow-soft-sm font-semibold'
-                        : 'bg-[#F8F8F5] text-[#263442] border-[#E3E7E8] hover:bg-[#F0F2EF]'
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.4)]'
+                        : 'bg-[#070B14]/80 text-slate-300 border-slate-800 hover:border-cyan-500/40 hover:bg-[#0E1726]'
                     )}
                   >
                     <span className="line-clamp-2 leading-tight">{localized}</span>
-                    {isSelected && <CheckCircle2 className="w-3.5 h-3.5 ml-1 shrink-0" />}
+                    {isSelected && <CheckCircle2 className="w-3.5 h-3.5 ml-1 shrink-0 text-slate-950" />}
                   </button>
                 );
               })}
@@ -309,8 +310,8 @@ export const ReportPage: React.FC = () => {
 
           {/* 2. Issue Title */}
           <div className="space-y-1.5">
-            <label htmlFor="title" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-              2. Brief Issue Summary / Title <span className="text-[#B85D5D]">*</span>
+            <label htmlFor="title" className="block text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+              2. Brief Issue Summary / Title <span className="text-rose-400">*</span>
             </label>
             <input
               id="title"
@@ -320,14 +321,14 @@ export const ReportPage: React.FC = () => {
               placeholder="e.g. Uncovered drain creating flood hazard on 4th Main"
               maxLength={140}
               required
-              className="w-full px-4 py-2.5 rounded-lg border border-[#E3E7E8] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[44px]"
+              className="w-full px-4 py-2.5 rounded-xl border border-cyan-500/30 bg-[#070B14]/80 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 min-h-[44px]"
             />
           </div>
 
           {/* 3. Detailed Problem Description */}
           <div className="space-y-1.5">
-            <label htmlFor="description" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-              3. Problem Description <span className="text-[#B85D5D]">*</span>
+            <label htmlFor="description" className="block text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+              3. Problem Description <span className="text-rose-400">*</span>
             </label>
             <textarea
               id="description"
@@ -336,15 +337,15 @@ export const ReportPage: React.FC = () => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the problem in detail: how long it has been present, immediate dangers to two-wheelers, children or pedestrians, and nearby landmarks..."
               required
-              className="w-full px-4 py-2.5 rounded-lg border border-[#E3E7E8] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[100px]"
+              className="w-full px-4 py-2.5 rounded-xl border border-cyan-500/30 bg-[#070B14]/80 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 min-h-[100px]"
             />
-            <div className="text-[11px] text-[#687786] flex justify-between">
-              <span>Original text is preserved and never overwritten by AI.</span>
+            <div className="text-[11px] text-slate-400 font-mono flex justify-between">
+              <span>Original text is preserved and immutable.</span>
               <span>{description.length}/500 chars</span>
             </div>
           </div>
 
-          {/* 4. Interactive Leaflet Map Location Selection */}
+          {/* 4. Interactive GIS Location Selection */}
           <div className="space-y-3">
             <LocationPicker
               latitude={latitude}
@@ -354,7 +355,7 @@ export const ReportPage: React.FC = () => {
             />
 
             <div className="space-y-1">
-              <label htmlFor="address" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
+              <label htmlFor="address" className="block text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
                 Street Address or Landmark
               </label>
               <input
@@ -363,7 +364,7 @@ export const ReportPage: React.FC = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Shop number, cross road, apartment name or municipal ward..."
-                className="w-full px-4 py-2 rounded-lg border border-[#E3E7E8] bg-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[42px]"
+                className="w-full px-4 py-2 rounded-xl border border-cyan-500/30 bg-[#070B14]/80 text-white placeholder:text-slate-500 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 min-h-[42px]"
               />
             </div>
           </div>
@@ -378,24 +379,24 @@ export const ReportPage: React.FC = () => {
 
           {/* Error display */}
           {errorMessage && (
-            <div className="p-3 rounded-lg bg-[#B85D5D]/10 border border-[#B85D5D]/30 text-xs text-[#B85D5D] flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-xs text-rose-300 flex items-center gap-2 font-mono">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Submit Action */}
-          <div className="pt-4 border-t border-[#E3E7E8] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-xs text-[#687786]">
+          <div className="pt-4 border-t border-cyan-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-xs text-slate-400 font-mono">
               Submissions generate an instant tracking token.
             </div>
             <Button
               type="submit"
               size="lg"
-              variant="primary"
+              variant="cyber"
               isLoading={isSubmitting}
-              className="w-full sm:w-auto shadow-md"
-              rightIcon={<ArrowRight className="w-4 h-4" />}
+              className="w-full sm:w-auto text-slate-950 font-bold"
+              rightIcon={<ArrowRight className="w-4 h-4 text-slate-950" />}
             >
               Submit Complaint (Generate Token)
             </Button>

@@ -3,7 +3,7 @@ import { clsx } from 'clsx';
 import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'admin-primary' | 'admin-secondary';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'admin-primary' | 'admin-secondary' | 'cyber' | 'cyber-outline';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -32,13 +32,15 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const variantClasses = {
-      primary: 'bg-[#294563] text-white hover:bg-[#1f344b] active:bg-[#18293b] border border-transparent shadow-sm',
-      secondary: 'bg-[#F8F8F5] text-[#263442] hover:bg-[#F0F2EF] active:shadow-inner border border-[#E3E7E8] shadow-soft-sm',
-      outline: 'bg-transparent text-[#294563] border border-[#7189A4]/40 hover:bg-[#7189A4]/10 active:bg-[#7189A4]/20',
-      danger: 'bg-[#B85D5D] text-white hover:bg-[#a34e4e] active:bg-[#8f4242] border border-transparent',
-      ghost: 'bg-transparent text-[#263442] hover:bg-[#E3E7E8]/50 active:bg-[#E3E7E8]',
+      primary: 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:via-sky-400 hover:to-blue-500 active:opacity-90 border border-cyan-400/30 shadow-[0_0_20px_rgba(6,182,212,0.35)]',
+      secondary: 'bg-[#0E1726]/80 text-[#F3F4F6] hover:bg-[#162238] hover:border-cyan-500/40 active:bg-[#0E1726] border border-cyan-500/20 shadow-sm backdrop-blur-md',
+      outline: 'bg-transparent text-cyan-400 border border-cyan-500/40 hover:bg-cyan-500/10 active:bg-cyan-500/20',
+      danger: 'bg-gradient-to-r from-rose-600 to-red-600 text-white hover:from-rose-500 hover:to-red-500 active:opacity-90 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.3)]',
+      ghost: 'bg-transparent text-slate-300 hover:text-white hover:bg-slate-800/50 active:bg-slate-800',
       'admin-primary': 'bg-[#8EA8C2] text-[#111A24] font-medium hover:bg-[#9eb8d2] active:bg-[#7d97b0] border border-transparent',
       'admin-secondary': 'bg-[#1C2C3D] text-[#F3F5F6] hover:bg-[#25394e] border border-[#304153]',
+      cyber: 'bg-gradient-to-r from-cyan-500 via-cyan-400 to-blue-600 text-slate-950 font-bold hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:brightness-110 active:scale-[0.98] border border-cyan-300/50',
+      'cyber-outline': 'bg-cyan-950/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/20 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] font-semibold',
     };
 
     return (

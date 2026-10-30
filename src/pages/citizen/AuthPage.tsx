@@ -3,7 +3,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { useAuth } from '@/lib/authContext';
-import { Compass, ShieldCheck, UserCheck, ArrowRight, AlertCircle, CheckCircle2, Sparkles, Building2 } from 'lucide-react';
+import { Compass, ShieldCheck, UserCheck, ArrowRight, AlertCircle, CheckCircle2, Sparkles, Building2, Radio, Lock } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = false }) => {
@@ -42,7 +42,6 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
     clearError();
     try {
       await signInWithGoogle(role, returnUrl);
-      // If in demo/synthetic mode, redirect directly
       navigate(returnUrl, { replace: true });
     } catch (err: unknown) {
       console.error('Google sign-in error:', err);
@@ -81,16 +80,16 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
-      <Card className="p-6 sm:p-8 soft-card-elevated space-y-6">
+      <Card className="p-6 sm:p-8 cyber-glass-card border-cyan-500/30 space-y-6 shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-[#294563] text-white mx-auto flex items-center justify-center shadow-soft-sm">
-            <Compass className="w-6 h-6 text-[#8EA8C2]" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-sky-500/10 to-violet-600/20 border border-cyan-400/40 text-cyan-400 mx-auto flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            <Compass className="w-6 h-6 text-cyan-300 animate-pulse" />
           </div>
-          <h1 className="text-2xl font-bold font-heading text-[#294563]">
+          <h1 className="text-2xl font-bold font-heading text-white">
             {isRegister ? 'Create CivicLens Account' : 'Sign In to CivicLens'}
           </h1>
-          <p className="text-xs text-[#687887] max-w-sm mx-auto leading-relaxed">
+          <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
             {role === 'citizen'
               ? 'Access welfare schemes, track public complaints, and receive AI-guided resolutions.'
               : 'Municipal officer credentials for intelligent triage, geospatial clusters, and action dispatch.'}
@@ -98,39 +97,39 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
         </div>
 
         {/* Role Toggle Selector */}
-        <div className="grid grid-cols-2 p-1 rounded-xl bg-[#F1F3EF] border border-[#E7E9E5]">
+        <div className="grid grid-cols-2 p-1 rounded-xl bg-[#070B14]/80 border border-cyan-500/20 font-mono text-xs">
           <button
             type="button"
             onClick={() => handleRoleChange('citizen')}
             className={clsx(
-              'py-2 px-3 rounded-lg text-xs font-semibold transition-all min-h-[42px] flex items-center justify-center gap-1.5',
+              'py-2 px-3 rounded-lg font-semibold transition-all min-h-[42px] flex items-center justify-center gap-1.5',
               role === 'citizen'
-                ? 'bg-white text-[#294563] shadow-soft-sm'
-                : 'text-[#687887] hover:text-[#253342]'
+                ? 'bg-cyan-500 text-slate-950 font-bold shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                : 'text-slate-400 hover:text-white'
             )}
           >
-            <UserCheck className="w-4 h-4 text-[#7189A4]" />
+            <UserCheck className="w-4 h-4" />
             <span>Citizen Portal</span>
           </button>
           <button
             type="button"
             onClick={() => handleRoleChange('officer')}
             className={clsx(
-              'py-2 px-3 rounded-lg text-xs font-semibold transition-all min-h-[42px] flex items-center justify-center gap-1.5',
+              'py-2 px-3 rounded-lg font-semibold transition-all min-h-[42px] flex items-center justify-center gap-1.5',
               role === 'officer'
-                ? 'bg-[#1C2C3D] text-white shadow-soft-sm'
-                : 'text-[#687887] hover:text-[#253342]'
+                ? 'bg-cyan-500 text-slate-950 font-bold shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                : 'text-slate-400 hover:text-white'
             )}
           >
-            <ShieldCheck className="w-4 h-4 text-[#8EA8C2]" />
+            <ShieldCheck className="w-4 h-4" />
             <span>Municipal Officer</span>
           </button>
         </div>
 
         {/* Error Notification Banner */}
         {displayedError && (
-          <div className="p-3.5 rounded-xl bg-[#B85D5D]/10 border border-[#B85D5D]/25 text-[#B85D5D] text-xs flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2.5 font-mono">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
             <div className="flex-1">
               <strong className="block font-semibold">Sign In Alert:</strong>
               <span>{displayedError}</span>
@@ -144,11 +143,11 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
             type="button"
             onClick={handleGoogleSignIn}
             disabled={googleLoading || isLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-[#E7E9E5] bg-white text-sm font-semibold text-[#253342] shadow-soft-sm hover:bg-[#F1F3EF] hover:border-[#7189A4]/40 transition-all min-h-[46px] disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-cyan-500/30 bg-[#070B14]/80 text-sm font-semibold text-white shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:bg-[#111A2E] hover:border-cyan-400 transition-all min-h-[46px] disabled:opacity-60"
             aria-label="Continue with Google"
           >
             {googleLoading ? (
-              <span className="inline-block w-4 h-4 border-2 border-[#294563] border-t-transparent rounded-full animate-spin" />
+              <span className="inline-block w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
             ) : (
               <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -179,8 +178,8 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
           </button>
 
           <div className="relative flex items-center justify-center">
-            <div className="border-t border-[#E7E9E5] w-full" />
-            <span className="bg-white px-3 text-[11px] font-medium text-[#687887] uppercase tracking-wider relative shrink-0">
+            <div className="border-t border-cyan-500/20 w-full" />
+            <span className="bg-[#0E1726] px-3 text-[11px] font-mono font-medium text-slate-400 uppercase tracking-wider relative shrink-0">
               or sign in with credentials
             </span>
           </div>
@@ -190,7 +189,7 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
         <form onSubmit={handleEmailAuth} className="space-y-4">
           {isRegister && (
             <div className="space-y-1 text-left">
-              <label htmlFor="auth-fullname-input" className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
+              <label htmlFor="auth-fullname-input" className="block text-xs font-mono font-semibold text-cyan-400 uppercase tracking-wider">
                 Full Name
               </label>
               <input
@@ -200,13 +199,13 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ravi Kumar"
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-[#E7E9E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] focus:border-transparent min-h-[44px]"
+                className="w-full px-4 py-2.5 rounded-xl border border-cyan-500/30 bg-[#070B14]/80 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 min-h-[44px]"
               />
             </div>
           )}
 
           <div className="space-y-1 text-left">
-            <label htmlFor="auth-email-input" className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
+            <label htmlFor="auth-email-input" className="block text-xs font-mono font-semibold text-cyan-400 uppercase tracking-wider">
               Email Address
             </label>
             <input
@@ -216,17 +215,17 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
               onChange={(e) => setEmail(e.target.value)}
               placeholder={role === 'officer' ? 'officer.gowda@bbmp.gov.in' : 'citizen@karnataka.gov.in'}
               required
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E7E9E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] focus:border-transparent min-h-[44px]"
+              className="w-full px-4 py-2.5 rounded-xl border border-cyan-500/30 bg-[#070B14]/80 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 min-h-[44px]"
             />
           </div>
 
           <div className="space-y-1 text-left">
             <div className="flex items-center justify-between">
-              <label htmlFor="auth-password-input" className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
+              <label htmlFor="auth-password-input" className="block text-xs font-mono font-semibold text-cyan-400 uppercase tracking-wider">
                 Password
               </label>
               {!isRegister && (
-                <span className="text-xs text-[#7189A4] hover:underline cursor-pointer">
+                <span className="text-xs text-cyan-400 hover:underline cursor-pointer font-mono">
                   Forgot password?
                 </span>
               )}
@@ -238,16 +237,16 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
               required
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E7E9E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] focus:border-transparent min-h-[44px]"
+              className="w-full px-4 py-2.5 rounded-xl border border-cyan-500/30 bg-[#070B14]/80 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 min-h-[44px]"
             />
           </div>
 
           <Button
             type="submit"
-            variant="primary"
+            variant="cyber"
             disabled={isSubmitting}
-            className="w-full mt-2"
-            rightIcon={<ArrowRight className="w-4 h-4" />}
+            className="w-full mt-2 text-slate-950 font-bold"
+            rightIcon={<ArrowRight className="w-4 h-4 text-slate-950" />}
           >
             {isSubmitting ? (
               'Authenticating...'
@@ -260,18 +259,18 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
             )}
           </Button>
 
-          <div className="pt-2 text-center text-xs text-[#687887]">
+          <div className="pt-2 text-center text-xs text-slate-400 font-mono">
             {isRegister ? (
               <span>
                 Already have an account?{' '}
-                <Link to="/login" className="font-semibold text-[#294563] hover:underline">
+                <Link to="/login" className="font-semibold text-cyan-400 hover:underline">
                   Sign in
                 </Link>
               </span>
             ) : (
               <span>
                 Don't have an account?{' '}
-                <Link to="/register" className="font-semibold text-[#294563] hover:underline">
+                <Link to="/register" className="font-semibold text-cyan-400 hover:underline">
                   Register as Citizen
                 </Link>
               </span>
@@ -280,27 +279,27 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
         </form>
 
         {/* Quick Demo Access Bar for Evaluators */}
-        <div className="pt-4 border-t border-[#E7E9E5] text-left space-y-2">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#687887] uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-[#7C9B85]" />
+        <div className="pt-4 border-t border-cyan-500/20 text-left space-y-2">
+          <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
             <span>Instant Demo Access (No Password Required)</span>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => handleQuickDemo('citizen')}
-              className="px-3 py-2 text-left rounded-lg border border-[#E7E9E5] bg-[#F1F3EF]/60 hover:bg-[#F1F3EF] transition-colors text-xs text-[#253342]"
+              className="px-3 py-2 text-left rounded-xl border border-cyan-500/30 bg-[#070B14]/90 hover:bg-cyan-950/40 hover:border-cyan-400 transition-colors text-xs text-white"
             >
-              <div className="font-semibold text-[#294563]">Citizen Demo</div>
-              <div className="text-[10px] text-[#687887]">Track & file grievances</div>
+              <div className="font-semibold text-cyan-300 font-mono">Citizen Demo</div>
+              <div className="text-[10px] text-slate-400">Track & file grievances</div>
             </button>
             <button
               type="button"
               onClick={() => handleQuickDemo('officer')}
-              className="px-3 py-2 text-left rounded-lg border border-[#304153]/40 bg-[#1C2C3D] hover:bg-[#25394e] transition-colors text-xs text-white"
+              className="px-3 py-2 text-left rounded-xl border border-violet-500/30 bg-[#070B14]/90 hover:bg-violet-950/40 hover:border-violet-400 transition-colors text-xs text-white"
             >
-              <div className="font-semibold text-[#8EA8C2]">Officer Demo</div>
-              <div className="text-[10px] text-[#A8B5C1]">Admin triage & GIS map</div>
+              <div className="font-semibold text-violet-300 font-mono">Officer Demo</div>
+              <div className="text-[10px] text-slate-400">Admin triage & GIS map</div>
             </button>
           </div>
         </div>
