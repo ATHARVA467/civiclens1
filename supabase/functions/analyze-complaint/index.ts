@@ -170,3 +170,4 @@ ${image_url ? `Attached Image URL: ${image_url}` : 'No image attached'}`;
     );
   }
 });
+

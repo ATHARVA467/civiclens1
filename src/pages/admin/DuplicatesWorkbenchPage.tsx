@@ -3,13 +3,13 @@ import { SYNTHETIC_DUPLICATES, SYNTHETIC_REPORTS } from '@/lib/syntheticData';
 import { DuplicateCandidate } from '@/types';
 import { Card } from '@/components/common/Card';
 import { evaluateDuplicatePair } from '@/lib/duplicateEngine';
-import { 
-  CopyCheck, 
-  MapPin, 
-  CheckCircle2, 
-  XCircle, 
-  Link2, 
-  GitMerge, 
+import {
+  CopyCheck,
+  MapPin,
+  CheckCircle2,
+  XCircle,
+  Link2,
+  GitMerge,
   AlertTriangle,
   Info,
   ArrowRight,

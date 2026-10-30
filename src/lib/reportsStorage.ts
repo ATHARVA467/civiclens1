@@ -141,3 +141,4 @@ export function generateInitialAIAnalysis(report: Report): AIAnalysis {
     created_at: report.created_at
   };
 }
+
