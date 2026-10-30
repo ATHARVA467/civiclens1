@@ -3,6 +3,7 @@ import { SYNTHETIC_REPORTS } from '@/lib/syntheticData';
 import { Report, ReportCategory, ReportStatus, PriorityBand } from '@/types';
 import { Card } from '@/components/common/Card';
 import { StatusBadge, PriorityBadge, CategoryBadge } from '@/components/common/Badges';
+import { calculatePriorityScore, PriorityBreakdown } from '@/lib/priorityEngine';
 import { 
   Inbox, 
   Search, 
@@ -15,7 +16,9 @@ import {
   RotateCw,
   Building2,
   Sparkles,
-  ArrowUpDown
+  ArrowUpDown,
+  Calculator,
+  Sliders
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -26,12 +29,13 @@ export const ComplaintsQueuePage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [overrideBand, setOverrideBand] = useState<PriorityBand | null>(null);
 
   const filteredReports = reports.filter((rep) => {
     const matchesSearch =
       rep.title.toLowerCase().includes(search.toLowerCase()) ||
       rep.tracking_token.toLowerCase().includes(search.toLowerCase()) ||
-      (rep.address && rep.address.toLowerCase().includes(search.toLowerCase()));
+      (rep.address && rep.address.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesCat = categoryFilter === 'all' || rep.category === categoryFilter;
     const matchesStatus = statusFilter === 'all' || rep.status === statusFilter;
@@ -48,6 +52,28 @@ export const ComplaintsQueuePage: React.FC = () => {
       setSelectedReport((prev) => prev ? { ...prev, status: newStatus } : null);
     }
   };
+
+  const handleOverridePriority = (newBand: PriorityBand) => {
+    if (!selectedReport) return;
+    setReports((prev) =>
+      prev.map((r) => (r.id === selectedReport.id ? { ...r, priority_band: newBand } : r))
+    );
+    setSelectedReport((prev) => prev ? { ...prev, priority_band: newBand } : null);
+    setOverrideBand(newBand);
+  };
+
+  const searchQuery = search;
+
+  // Calculate deterministic priority factors for selected report
+  const selectedPriorityBreakdown: PriorityBreakdown | null = selectedReport
+    ? calculatePriorityScore({
+        severity: selectedReport.priority_band === 'Critical' ? 'critical' : selectedReport.priority_band === 'High' ? 'high' : selectedReport.priority_band === 'Medium' ? 'medium' : 'low',
+        impactScore: selectedReport.priority_band === 'Critical' ? 90 : selectedReport.priority_band === 'High' ? 75 : 50,
+        durationDays: 3,
+        recurringReportCount: 2,
+        isLifeSafetyHazard: selectedReport.category === 'Electrical Hazards'
+      })
+    : null;
 
   return (
     <div className="space-y-6">
@@ -164,7 +190,10 @@ export const ComplaintsQueuePage: React.FC = () => {
                   <td className="px-4 py-3 text-right">
                     <button
                       type="button"
-                      onClick={() => setSelectedReport(rep)}
+                      onClick={() => {
+                        setSelectedReport(rep);
+                        setOverrideBand(null);
+                      }}
                       className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-[#172332] border border-[#304153] hover:bg-[#25394e] text-[#8EA8C2] font-medium"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -178,10 +207,10 @@ export const ComplaintsQueuePage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Detail & Action Modal */}
-      {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-[#1C2C3D] border border-[#304153] rounded-2xl p-6 text-[#F3F5F6] space-y-5 shadow-2xl relative">
+      {/* Detail & Action Modal with Priority Breakdown */}
+      {selectedReport && selectedPriorityBreakdown && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#1C2C3D] border border-[#304153] rounded-2xl p-6 text-[#F3F5F6] space-y-5 shadow-2xl relative my-8">
             <button
               onClick={() => setSelectedReport(null)}
               className="absolute top-4 right-4 p-2 text-[#A8B5C1] hover:text-white"
@@ -196,6 +225,7 @@ export const ComplaintsQueuePage: React.FC = () => {
                 </span>
                 <StatusBadge status={selectedReport.status} isDark={true} />
                 <PriorityBadge priority={selectedReport.priority_band} isDark={true} />
+                <CategoryBadge category={selectedReport.category} isDark={true} />
               </div>
               <h2 className="text-xl font-bold pt-1">{selectedReport.title}</h2>
             </div>
@@ -206,6 +236,57 @@ export const ComplaintsQueuePage: React.FC = () => {
               <div className="text-[#A8B5C1] flex items-center gap-1 pt-1">
                 <MapPin className="w-3.5 h-3.5 text-[#8EA8C2]" />
                 <span>{selectedReport.address} (GPS: {selectedReport.latitude}, {selectedReport.longitude})</span>
+              </div>
+            </div>
+
+            {/* Explainable Deterministic Priority Engine Card */}
+            <div className="p-4 rounded-xl bg-[#172332] border border-[#304153] space-y-3 text-xs">
+              <div className="flex items-center justify-between">
+                <div className="font-bold text-[#8EA8C2] uppercase tracking-wider flex items-center gap-1.5">
+                  <Calculator className="w-4 h-4 text-[#8EA8C2]" />
+                  <span>Explainable Priority Calculation (Section 8)</span>
+                </div>
+                <span className="font-mono text-xs font-bold text-[#F3F5F6]">
+                  Calculated Score: {selectedPriorityBreakdown.priorityScore}/100
+                </span>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-[#111A24] font-mono text-[11px] text-[#A8B5C1] border border-[#304153]/60">
+                {selectedPriorityBreakdown.formulaExplanation}
+              </div>
+
+              <div className="space-y-1 pt-1">
+                <span className="font-semibold text-[#F3F5F6] text-[11px]">Contributing Factors:</span>
+                <ul className="list-disc list-inside text-[#A8B5C1] space-y-1 pl-1 text-[11px]">
+                  {selectedPriorityBreakdown.contributingFactors.map((f, idx) => (
+                    <li key={idx}>{f}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Manual Administrator Priority Override */}
+              <div className="pt-2 border-t border-[#304153] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <span className="text-[11px] text-[#A8B5C1] flex items-center gap-1">
+                  <Sliders className="w-3.5 h-3.5 text-[#8EA8C2]" />
+                  <span>Manual Authority Override:</span>
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {(['Critical', 'High', 'Medium', 'Low'] as PriorityBand[]).map((band) => (
+                    <button
+                      key={band}
+                      type="button"
+                      onClick={() => handleOverridePriority(band)}
+                      className={clsx(
+                        'px-2.5 py-1 rounded text-[11px] font-semibold border transition-all',
+                        selectedReport.priority_band === band
+                          ? 'bg-[#8EA8C2] text-[#111A24] border-[#8EA8C2]'
+                          : 'bg-[#111A24] text-[#A8B5C1] border-[#304153] hover:text-white'
+                      )}
+                    >
+                      {band}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -248,4 +329,3 @@ export const ComplaintsQueuePage: React.FC = () => {
     </div>
   );
 };
-
