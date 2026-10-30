@@ -333,6 +333,7 @@ export const AIChatGuidance: React.FC<{
             <button
               type="button"
               onClick={handleResetChat}
+              aria-label="Reset conversation"
               className="p-1.5 rounded-lg text-[#687887] hover:text-[#253342] hover:bg-[#E7E9E5]/60 transition-colors"
               title="Reset conversation"
             >
@@ -343,6 +344,7 @@ export const AIChatGuidance: React.FC<{
             <button
               type="button"
               onClick={onClose}
+              aria-label="Close conversation drawer"
               className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-[#E7E9E5] text-[#687887] hover:text-[#253342]"
             >
               Close
@@ -443,7 +445,8 @@ export const AIChatGuidance: React.FC<{
                               key={i}
                               href={src.url || '#'}
                               target={src.url ? '_blank' : '_self'}
-                              rel="noreferrer"
+                              rel={src.url ? 'noopener noreferrer' : undefined}
+                              aria-label={src.url ? `${src.title} (opens in new tab)` : src.title}
                               className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-[#F1F3EF] text-[#294563] hover:underline"
                             >
                               <span>{src.title}</span>
@@ -528,13 +531,18 @@ export const AIChatGuidance: React.FC<{
           }}
           className="flex items-center gap-2"
         >
+          <label htmlFor="ai-chat-prompt-input" className="sr-only">
+            Ask CivicLens AI a question
+          </label>
           <input
+            id="ai-chat-prompt-input"
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about Gruha Lakshmi, income certificate, pothole repair..."
             disabled={isLoading}
             className="flex-1 px-4 py-2.5 rounded-xl border border-[#E7E9E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] focus:border-transparent min-h-[44px]"
+            aria-label="Ask CivicLens AI a question"
           />
           <Button
             type="submit"

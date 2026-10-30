@@ -253,14 +253,18 @@ export const LandingPage: React.FC = () => {
             <Card className="p-2 sm:p-2.5 rounded-2xl border border-[#E7E9E5] shadow-soft-lg bg-white">
               <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <div className="flex-1 flex items-center px-3.5 gap-2.5 min-h-[46px]">
-                  <Search className="w-5 h-5 text-[#7189A4] shrink-0" />
+                  <Search className="w-5 h-5 text-[#7189A4] shrink-0" aria-hidden="true" />
+                  <label htmlFor="civic-search-input" className="sr-only">
+                    Search government schemes and civic guidance
+                  </label>
                   <input
+                    id="civic-search-input"
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Ask about Gruha Lakshmi, income certificate, pothole repair..."
                     className="w-full text-sm sm:text-base text-[#253342] placeholder:text-[#687887]/80 bg-transparent focus:outline-none"
-                    aria-label="Civic guidance search query"
+                    aria-label="Search government schemes and civic guidance"
                   />
                 </div>
                 <Button
@@ -554,11 +558,12 @@ export const LandingPage: React.FC = () => {
                 <a
                   href="https://sevasindhu.karnataka.gov.in"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
+                  aria-label="Karnataka Seva Sindhu Portal (opens in new tab)"
                   className="text-xs text-[#7189A4] hover:text-[#294563] inline-flex items-center gap-1"
                 >
                   <span>Portal</span>
-                  <ExternalLink className="w-3 h-3" />
+                  <ExternalLink className="w-3 h-3" aria-hidden="true" />
                 </a>
               </div>
             </Card>
@@ -614,7 +619,11 @@ export const LandingPage: React.FC = () => {
                     Enter your 12-character CivicLens tracking token to inspect live resolution progress.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2">
+                    <label htmlFor="token-tracker-input" className="sr-only">
+                      Grievance Tracking Token
+                    </label>
                     <input
+                      id="token-tracker-input"
                       type="text"
                       value={tokenInput}
                       onChange={(e) => {
@@ -623,7 +632,7 @@ export const LandingPage: React.FC = () => {
                       }}
                       placeholder="e.g. CLK-DRN-8201"
                       className="flex-1 px-4 py-2.5 rounded-xl border border-[#E7E9E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[44px] uppercase font-mono"
-                      aria-label="Tracking Token Input"
+                      aria-label="Enter your 12-character grievance tracking token"
                     />
                     <Button
                       type="submit"

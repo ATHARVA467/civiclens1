@@ -25,6 +25,7 @@ export const LanguageToggle: React.FC<{ isDark?: boolean; className?: string }> 
       <button
         type="button"
         onClick={() => setLang('en')}
+        aria-label="Switch language to English"
         className={clsx(
           'px-2 py-1 rounded transition-all min-h-[32px] min-w-[32px]',
           lang === 'en'
@@ -42,6 +43,7 @@ export const LanguageToggle: React.FC<{ isDark?: boolean; className?: string }> 
       <button
         type="button"
         onClick={() => setLang('kn')}
+        aria-label="ಕನ್ನಡ ಭಾಷೆಗೆ ಬದಲಿಸಿ (Switch to Kannada)"
         className={clsx(
           'px-2 py-1 rounded transition-all min-h-[32px] min-w-[32px] font-kannada',
           lang === 'kn'

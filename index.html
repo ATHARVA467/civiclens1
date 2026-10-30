@@ -2,20 +2,111 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>CivicLens AI | Smart Civic Complaint Management</title>
+    <meta name="description" content="CivicLens AI transforms civic complaints into actionable insights using AI-powered complaint analysis, tracking and transparent resolution." />
+    <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#294563" />
-    <meta name="description" content="CIVICLENS AI: AI-powered Civic Intelligence and Public Issue Resolution Platform. From Complaints to Action." />
-    <title>CIVICLENS AI — From Complaints to Action</title>
-    <!-- Google Fonts: Manrope (Headings), Inter (Body) & Noto Sans Kannada -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="canonical" href="https://civiclens-ai-nu.vercel.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://civiclens-ai-nu.vercel.app/" />
+    <meta property="og:title" content="CivicLens AI | Smart Civic Complaint Management" />
+    <meta property="og:description" content="CivicLens AI transforms civic complaints into actionable insights using AI-powered complaint analysis, tracking and transparent resolution." />
+    <meta property="og:image" content="https://civiclens-ai-nu.vercel.app/og-image.svg" />
+    <meta property="og:site_name" content="CivicLens AI" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://civiclens-ai-nu.vercel.app/" />
+    <meta name="twitter:title" content="CivicLens AI | Smart Civic Complaint Management" />
+    <meta name="twitter:description" content="CivicLens AI transforms civic complaints into actionable insights using AI-powered complaint analysis, tracking and transparent resolution." />
+    <meta name="twitter:image" content="https://civiclens-ai-nu.vercel.app/og-image.svg" />
+
+    <!-- Icons & Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Optimized Google Fonts Loading (Non-Render Blocking) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Noto+Sans+Kannada:wght@400;600&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Noto+Sans+Kannada:wght@400;600&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Noto+Sans+Kannada:wght@400;600&display=swap"
+      />
+    </noscript>
+
+    <!-- Leaflet CSS (Non-Render Blocking with Fallback) -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    </noscript>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://civiclens-ai-nu.vercel.app/#organization",
+            "name": "CivicLens AI",
+            "url": "https://civiclens-ai-nu.vercel.app/",
+            "logo": "https://civiclens-ai-nu.vercel.app/favicon.svg",
+            "description": "CivicLens AI transforms civic complaints into actionable insights using AI-powered complaint analysis, tracking and transparent resolution."
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://civiclens-ai-nu.vercel.app/#website",
+            "url": "https://civiclens-ai-nu.vercel.app/",
+            "name": "CivicLens AI",
+            "publisher": { "@id": "https://civiclens-ai-nu.vercel.app/#organization" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://civiclens-ai-nu.vercel.app/track/{search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "GovernmentService",
+            "name": "Civic Grievance Redressal and Scheme Guidance",
+            "provider": { "@id": "https://civiclens-ai-nu.vercel.app/#organization" },
+            "serviceType": "Public Infrastructure and Grievance Resolution",
+            "areaServed": {
+              "@type": "AdministrativeArea",
+              "name": "Karnataka"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
-  <body class="bg-[#F8F8F5] text-[#263442] antialiased selection:bg-[#7189A4]/20 selection:text-[#294563]">
+  <body class="bg-[#F8F8F5] text-[#253342] antialiased selection:bg-[#7189A4]/20 selection:text-[#294563]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

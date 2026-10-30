@@ -25,6 +25,17 @@ export const PlatformTourModal: React.FC<{ isOpen: boolean; onClose: () => void 
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
 
+  // Close on Escape key press (WCAG 2.2 AA)
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const steps = [
@@ -109,7 +120,12 @@ export const PlatformTourModal: React.FC<{ isOpen: boolean; onClose: () => void 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-2xl bg-white rounded-2xl p-6 sm:p-8 text-[#263442] shadow-2xl relative border border-[#E3E7E8]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tour-modal-title"
+        className="w-full max-w-2xl bg-white rounded-2xl p-6 sm:p-8 text-[#263442] shadow-2xl relative border border-[#E3E7E8]"
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -153,7 +169,7 @@ export const PlatformTourModal: React.FC<{ isOpen: boolean; onClose: () => void 
               {active.icon}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#294563]">{active.title}</h2>
+              <h2 id="tour-modal-title" className="text-xl font-bold text-[#294563]">{active.title}</h2>
               <p className="text-xs text-[#687786]">Lifecycle stage overview</p>
             </div>
           </div>

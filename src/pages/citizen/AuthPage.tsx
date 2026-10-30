@@ -150,7 +150,7 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
             {googleLoading ? (
               <span className="inline-block w-4 h-4 border-2 border-[#294563] border-t-transparent rounded-full animate-spin" />
             ) : (
-              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -190,10 +190,11 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
         <form onSubmit={handleEmailAuth} className="space-y-4">
           {isRegister && (
             <div className="space-y-1 text-left">
-              <label className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
+              <label htmlFor="auth-fullname-input" className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
                 Full Name
               </label>
               <input
+                id="auth-fullname-input"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -205,10 +206,11 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
           )}
 
           <div className="space-y-1 text-left">
-            <label className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
+            <label htmlFor="auth-email-input" className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
               Email Address
             </label>
             <input
+              id="auth-email-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -220,7 +222,7 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
 
           <div className="space-y-1 text-left">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
+              <label htmlFor="auth-password-input" className="block text-xs font-semibold text-[#253342] uppercase tracking-wider">
                 Password
               </label>
               {!isRegister && (
@@ -230,6 +232,7 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
               )}
             </div>
             <input
+              id="auth-password-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

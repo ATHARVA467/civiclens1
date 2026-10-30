@@ -47,6 +47,14 @@ export const CitizenLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F8F5] text-[#253342]">
+      {/* Accessible Skip to Content Link (WCAG 2.2 AA) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#294563] focus:text-white focus:font-semibold focus:rounded-xl focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Skip to main content
+      </a>
+
       {/* Top Notice Bar */}
       <div className="bg-[#294563] text-white/90 text-xs py-1.5 px-4 border-b border-[#294563]/20">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -59,6 +67,7 @@ export const CitizenLayout: React.FC = () => {
             <button
               type="button"
               onClick={() => setTourOpen(true)}
+              aria-label="Open Interactive Platform Tour"
               className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-[11px] font-medium transition-colors border border-white/20"
               title="Interactive Platform Walkthrough"
             >
@@ -132,13 +141,18 @@ export const CitizenLayout: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#E7E9E5] bg-white hover:bg-[#F1F3EF] transition-all text-xs font-semibold text-[#253342] shadow-soft-sm min-h-[40px]"
+                  aria-label="User account menu"
                   aria-expanded={userDropdownOpen}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#E7E9E5] bg-white hover:bg-[#F1F3EF] transition-all text-xs font-semibold text-[#253342] shadow-soft-sm min-h-[40px]"
                 >
                   {profile?.avatarUrl ? (
                     <img
                       src={profile.avatarUrl}
-                      alt={profile.fullName}
+                      alt={`${profile.fullName || 'User'} profile avatar`}
+                      width={24}
+                      height={24}
+                      loading="lazy"
+                      decoding="async"
                       className="w-6 h-6 rounded-full object-cover border border-[#E7E9E5]"
                     />
                   ) : (
@@ -281,7 +295,7 @@ export const CitizenLayout: React.FC = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 pb-16 md:pb-8">
+      <main id="main-content" tabIndex={-1} className="flex-1 pb-16 md:pb-8 focus:outline-none">
         <Outlet />
       </main>
 

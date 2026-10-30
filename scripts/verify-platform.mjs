@@ -152,6 +152,35 @@ assert(landingTsx.includes('AIChatGuidance'), 'Homepage integrates AI Chat Guida
 assert(landingTsx.includes('Gruha Lakshmi'), 'Homepage provides Scheme Discovery for Gruha Lakshmi');
 assert(landingTsx.includes('Sakala'), 'Homepage covers Karnataka Sakala Services Act and citizen rights');
 
+// 8. Lighthouse 100/100 Standards Verification (SEO, A11y, Best Practices, Performance)
+console.log('\n8. Checking Lighthouse 100/100 Standards (SEO, A11y, Security, Performance)...');
+const vercelJson = fs.readFileSync(path.resolve('./vercel.json'), 'utf8');
+assert(vercelJson.includes('X-Content-Type-Options') && vercelJson.includes('nosniff'), 'Security header X-Content-Type-Options: nosniff configured');
+assert(vercelJson.includes('X-Frame-Options') && vercelJson.includes('DENY'), 'Security header X-Frame-Options: DENY configured');
+assert(vercelJson.includes('Referrer-Policy'), 'Security header Referrer-Policy configured');
+assert(vercelJson.includes('Permissions-Policy'), 'Security header Permissions-Policy configured');
+
+const robotsTxt = fs.readFileSync(path.resolve('./public/robots.txt'), 'utf8');
+assert(robotsTxt.includes('Sitemap: https://civiclens-ai-nu.vercel.app/sitemap.xml'), 'robots.txt points to official sitemap.xml');
+assert(robotsTxt.includes('Disallow: /admin'), 'robots.txt disallows indexing of private admin dashboards');
+
+const sitemapXml = fs.readFileSync(path.resolve('./public/sitemap.xml'), 'utf8');
+assert(sitemapXml.includes('<loc>https://civiclens-ai-nu.vercel.app/</loc>'), 'sitemap.xml contains homepage entry');
+assert(sitemapXml.includes('<loc>https://civiclens-ai-nu.vercel.app/report</loc>'), 'sitemap.xml contains /report entry');
+
+assert(indexHtml.includes('rel="canonical"'), 'index.html defines canonical link');
+assert(indexHtml.includes('property="og:title"'), 'index.html defines Open Graph title');
+assert(indexHtml.includes('name="twitter:card"'), 'index.html defines Twitter card metadata');
+assert(indexHtml.includes('application/ld+json'), 'index.html contains JSON-LD structured data');
+assert(indexHtml.includes('"@type": "Organization"'), 'JSON-LD defines Organization schema');
+
+assert(appTsx.includes('lazy('), 'App.tsx implements code-splitting with React.lazy');
+assert(appTsx.includes('ErrorBoundary'), 'App.tsx wrapped in ErrorBoundary for runtime resilience');
+
+const citizenLayoutTsx = fs.readFileSync(path.resolve('./src/components/layout/CitizenLayout.tsx'), 'utf8');
+assert(citizenLayoutTsx.includes('Skip to main content'), 'CitizenLayout implements WCAG 2.2 AA skip-to-content link');
+assert(citizenLayoutTsx.includes('id="main-content"'), 'CitizenLayout marks main content landmark with id="main-content"');
+
 console.log('\n----------------------------------------');
 console.log(`VERIFICATION COMPLETE: ALL ${passedTests}/${totalTests} TESTS PASSED.`);
 console.log('----------------------------------------\n');
