@@ -151,3 +151,4 @@ export const AuthPage: React.FC<{ isRegister?: boolean }> = ({ isRegister = fals
     </div>
   );
 };
+

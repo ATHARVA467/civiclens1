@@ -171,3 +171,4 @@ export const ConnectionStatusPill: React.FC<{ isDark?: boolean }> = ({ isDark = 
     </>
   );
 };
+

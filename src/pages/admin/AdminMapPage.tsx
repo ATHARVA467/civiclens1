@@ -231,3 +231,4 @@ export const AdminMapPage: React.FC = () => {
     </div>
   );
 };
+

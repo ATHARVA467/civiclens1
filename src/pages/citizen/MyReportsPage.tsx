@@ -1,31 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { SYNTHETIC_REPORTS } from '@/lib/syntheticData';
-import { ReportCategory, ReportStatus } from '@/types';
+import { getAllReports } from '@/lib/reportsStorage';
+import { Report, ReportCategory, ReportStatus } from '@/types';
 import { Card } from '@/components/common/Card';
 import { StatusBadge, PriorityBadge, CategoryBadge } from '@/components/common/Badges';
 import { useI18n } from '@/lib/i18n';
 import { 
   FileText, 
   Search, 
-  Filter, 
   MapPin, 
   ExternalLink, 
   PlusCircle,
   Copy,
-  Check
+  Check,
+  RotateCw
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export const MyReportsPage: React.FC = () => {
   const { t } = useI18n();
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
   const statuses: ('all' | ReportStatus)[] = ['all', 'Submitted', 'Verified', 'Assigned', 'In Progress', 'Resolved'];
 
-  const filteredReports = SYNTHETIC_REPORTS.filter((rep) => {
+  useEffect(() => {
+    getAllReports().then((data) => {
+      setReports(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const filteredReports = reports.filter((rep) => {
     const matchesSearch =
       rep.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rep.tracking_token.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -54,7 +63,7 @@ export const MyReportsPage: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#294563]">
             {t.navMyReports}
           </h1>
-          <p className="text-sm text-[#687786]">
+          <p className="text-xs sm:text-sm text-[#687786]">
             Track status transitions, authority responses, and field resolution updates.
           </p>
         </div>
@@ -102,7 +111,12 @@ export const MyReportsPage: React.FC = () => {
 
       {/* Reports List */}
       <div className="space-y-3">
-        {filteredReports.length === 0 ? (
+        {loading ? (
+          <Card className="p-12 text-center text-[#687786] soft-card space-y-2">
+            <RotateCw className="w-8 h-8 mx-auto text-[#294563] animate-spin" />
+            <p className="text-sm font-semibold">Loading grievance records...</p>
+          </Card>
+        ) : filteredReports.length === 0 ? (
           <Card className="p-12 text-center text-[#687786] soft-card">
             <FileText className="w-10 h-10 mx-auto text-[#7189A4] mb-3 opacity-60" />
             <p className="text-base font-semibold text-[#294563]">No complaints found</p>

@@ -125,3 +125,4 @@ export interface UserProfile {
 }
 
 export type Language = 'en' | 'kn';
+

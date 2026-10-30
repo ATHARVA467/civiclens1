@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useI18n, CATEGORY_TRANSLATIONS } from '@/lib/i18n';
-import { ReportCategory } from '@/types';
+import { ReportCategory, Report, PriorityBand } from '@/types';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
+import { LocationPicker } from '@/components/citizen/LocationPicker';
+import { ImageUploader } from '@/components/citizen/ImageUploader';
+import { saveReportLocally } from '@/lib/reportsStorage';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { 
   Camera, 
   MapPin, 
-  UploadCloud, 
   CheckCircle2, 
   AlertCircle, 
   Sparkles, 
   ArrowRight,
   ShieldCheck,
-  Compass,
-  X
+  Copy,
+  Check,
+  RotateCw,
+  ExternalLink,
+  ChevronLeft
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -39,30 +44,17 @@ export const ReportPage: React.FC = () => {
   const [category, setCategory] = useState<ReportCategory>(initialCategory);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [address, setAddress] = useState('Gandhi Bazaar Main Road, Bangalore');
-  const [latitude, setLatitude] = useState<number>(12.9745);
-  const [longitude, setLongitude] = useState<number>(77.6082);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [address, setAddress] = useState('Indiranagar 100ft Road, Bangalore');
+  const [latitude, setLatitude] = useState<number>(12.9716);
+  const [longitude, setLongitude] = useState<number>(77.5946);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedToken, setSubmittedToken] = useState<string | null>(null);
+  const [submittedReport, setSubmittedReport] = useState<Report | null>(null);
+  const [copiedToken, setCopiedToken] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setErrorMessage('Image size must be less than 5MB');
-        return;
-      }
-      setErrorMessage('');
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
+  // Unpredictable tracking token generator (e.g. CLK-DRN-9482)
   const generateTrackingToken = (cat: ReportCategory) => {
     const prefixes: Record<ReportCategory, string> = {
       'Drainage & Waterlogging': 'CLK-DRN',
@@ -74,14 +66,25 @@ export const ReportPage: React.FC = () => {
       'Public Infrastructure': 'CLK-INF',
       'Other Civic Issues': 'CLK-OTH'
     };
-    const randomDigits = Math.floor(1000 + Math.random() * 9000);
-    return `${prefixes[cat] || 'CLK-CIV'}-${randomDigits}`;
+    const prefix = prefixes[cat] || 'CLK-CIV';
+    const randDigits = Math.floor(1000 + Math.random() * 9000);
+    return `${prefix}-${randDigits}`;
+  };
+
+  const handleLocationChange = (lat: number, lng: number) => {
+    setLatitude(lat);
+    setLongitude(lng);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim()) {
-      setErrorMessage('Please fill in both a title and a description of the issue');
+
+    if (!title.trim()) {
+      setErrorMessage('Please provide a brief title describing the issue.');
+      return;
+    }
+    if (!description.trim() || description.trim().length < 10) {
+      setErrorMessage('Please provide a description of at least 10 characters.');
       return;
     }
 
@@ -89,71 +92,139 @@ export const ReportPage: React.FC = () => {
     setErrorMessage('');
 
     const token = generateTrackingToken(category);
+    const now = new Date().toISOString();
+
+    // Default priority band assessment
+    let priorityBand: PriorityBand = 'Medium';
+    if (category === 'Electrical Hazards' || description.toLowerCase().includes('danger') || description.toLowerCase().includes('severe')) {
+      priorityBand = 'Critical';
+    } else if (category === 'Roads & Potholes' || category === 'Drainage & Waterlogging') {
+      priorityBand = 'High';
+    }
+
+    const newReport: Report = {
+      id: `rep-${Date.now()}`,
+      tracking_token: token,
+      title: title.trim(),
+      description: description.trim(),
+      category,
+      image_url: imageUrl,
+      latitude,
+      longitude,
+      address: address.trim() || 'Unspecified location',
+      status: 'Submitted',
+      priority_band: priorityBand,
+      created_at: now,
+      updated_at: now,
+    };
 
     try {
+      // 1. If Supabase is connected, persist to Supabase
       if (isSupabaseConfigured && supabase) {
         const { error } = await supabase.from('reports').insert({
-          tracking_token: token,
-          title: title.trim(),
-          description: description.trim(),
-          category,
-          address: address.trim(),
-          latitude,
-          longitude,
+          tracking_token: newReport.tracking_token,
+          title: newReport.title,
+          description: newReport.description,
+          category: newReport.category,
+          image_url: newReport.image_url,
+          latitude: newReport.latitude,
+          longitude: newReport.longitude,
+          address: newReport.address,
           status: 'Submitted',
-          priority_band: 'Medium'
+          priority_band: newReport.priority_band,
         });
 
         if (error) {
-          console.warn('Supabase insert notice:', error.message);
+          console.warn('Supabase insertion notice:', error.message);
         }
       }
 
-      // Successful capture state
+      // 2. Save locally so it is immediately visible in /my-reports and /track/:token
+      saveReportLocally(newReport);
+
       setTimeout(() => {
         setIsSubmitting(false);
-        setSubmittedToken(token);
-      }, 600);
+        setSubmittedReport(newReport);
+      }, 700);
     } catch (err: unknown) {
+      console.warn('Submission fallback:', err);
+      saveReportLocally(newReport);
       setIsSubmitting(false);
-      setSubmittedToken(token); // Fallback to token generation for demo flow
+      setSubmittedReport(newReport);
     }
   };
 
-  if (submittedToken) {
+  const copyTokenToClipboard = () => {
+    if (!submittedReport) return;
+    navigator.clipboard.writeText(submittedReport.tracking_token);
+    setCopiedToken(true);
+    setTimeout(() => setCopiedToken(false), 2000);
+  };
+
+  // Confirmation Success View
+  if (submittedReport) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12">
         <Card className="p-8 text-center space-y-6 soft-card-elevated border-emerald-500/30">
-          <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-200">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-200 shadow-soft-sm">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full">
-              Report Submitted Successfully
+              Submission Verified • Stage 1: Captured
             </span>
-            <h1 className="text-2xl font-bold text-[#294563]">Complaint Logged in CivicLens</h1>
-            <p className="text-sm text-[#687786]">
-              Your grievance has been captured and passed into the AI understanding pipeline.
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#294563]">
+              Grievance Successfully Registered
+            </h1>
+            <p className="text-sm text-[#687786] max-w-md mx-auto">
+              Your public complaint has been logged and queued for AI classification and municipal authority dispatch.
             </p>
           </div>
 
-          <div className="p-5 rounded-xl bg-[#F8F8F5] border border-[#E3E7E8] space-y-2 max-w-sm mx-auto">
-            <div className="text-xs font-semibold text-[#687786] uppercase tracking-wider">
-              Your Tracking Token
+          {/* Token Card */}
+          <div className="p-6 rounded-2xl bg-[#F8F8F5] border border-[#E3E7E8] space-y-3 max-w-md mx-auto shadow-soft-sm">
+            <div className="text-xs font-bold text-[#687786] uppercase tracking-wider">
+              Your Public Tracking Token
             </div>
-            <div className="font-mono text-2xl font-extrabold text-[#294563] tracking-wider select-all">
-              {submittedToken}
+            <div className="flex items-center justify-center gap-3">
+              <span className="font-mono text-2xl sm:text-3xl font-extrabold text-[#294563] tracking-wider select-all">
+                {submittedReport.tracking_token}
+              </span>
+              <button
+                type="button"
+                onClick={copyTokenToClipboard}
+                title="Copy token"
+                className="p-2 rounded-lg bg-white border border-[#E3E7E8] hover:bg-[#F0F2EF] text-[#294563] transition-colors"
+              >
+                {copiedToken ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
+              </button>
             </div>
-            <p className="text-[11px] text-[#687786]">
-              Keep this token safe to monitor authority action, officer notes and resolution evidence.
+            <p className="text-[11px] text-[#687786] leading-relaxed">
+              Save this tracking token to check status updates, inspection notes, and photographic proof of resolution.
             </p>
+          </div>
+
+          {/* Quick Summary */}
+          <div className="p-4 rounded-xl bg-white border border-[#E3E7E8] text-left text-xs space-y-2 max-w-md mx-auto">
+            <div className="flex items-center justify-between border-b border-[#E3E7E8] pb-2">
+              <span className="font-semibold text-[#294563]">{submittedReport.category}</span>
+              <span className="text-[11px] font-mono text-[#687786]">
+                {new Date(submittedReport.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
+            <div className="font-medium text-[#263442]">{submittedReport.title}</div>
+            <div className="text-[#687786] flex items-center gap-1 text-[11px]">
+              <MapPin className="w-3.5 h-3.5 text-[#7189A4] shrink-0" />
+              <span className="truncate">{submittedReport.address}</span>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Button
               variant="primary"
-              onClick={() => navigate(`/track/${submittedToken}`)}
+              size="lg"
+              onClick={() => navigate(`/track/${submittedReport.tracking_token}`)}
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="w-full sm:w-auto"
             >
@@ -161,15 +232,16 @@ export const ReportPage: React.FC = () => {
             </Button>
             <Button
               variant="secondary"
+              size="lg"
               onClick={() => {
-                setSubmittedToken(null);
+                setSubmittedReport(null);
                 setTitle('');
                 setDescription('');
-                setImagePreview(null);
+                setImageUrl(null);
               }}
               className="w-full sm:w-auto"
             >
-              Submit Another Report
+              Lodge Another Complaint
             </Button>
           </div>
         </Card>
@@ -177,28 +249,40 @@ export const ReportPage: React.FC = () => {
     );
   }
 
+  // Active Report Capture Form
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      {/* Back button & Title */}
       <div className="mb-6 space-y-1">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1 text-xs font-semibold text-[#294563] hover:underline mb-2"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
         <div className="flex items-center gap-2 text-xs font-bold text-[#7189A4] uppercase tracking-wider">
           <Sparkles className="w-4 h-4 text-[#7189A4]" />
-          <span>Rapid 60-Second Grievance Capture</span>
+          <span>Rapid 45-60 Second Citizen Grievance Capture</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#294563]">
-          Report a Public Civic Issue
+          {t.ctaReport}
         </h1>
-        <p className="text-sm text-[#687786]">
-          Provide details below. CivicLens AI automatically extracts priority factors and routes to the designated municipal body.
+        <p className="text-xs sm:text-sm text-[#687786]">
+          Report civic hazards directly to municipal authorities. No bureaucratic friction or passwords required.
         </p>
       </div>
 
       <Card className="p-6 sm:p-8 soft-card space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Category Picker */}
+          {/* 1. Category Picker */}
           <div className="space-y-2">
-            <label className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-              Select Problem Category <span className="text-[#B85D5D]">*</span>
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
+                1. Select Problem Category <span className="text-[#B85D5D]">*</span>
+              </label>
+              <span className="text-[11px] text-[#7189A4]">8 Official Municipal Domains</span>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {categories.map((cat) => {
                 const isSelected = category === cat;
@@ -223,116 +307,76 @@ export const ReportPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Title */}
+          {/* 2. Issue Title */}
           <div className="space-y-1.5">
             <label htmlFor="title" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-              Brief Summary / Title <span className="text-[#B85D5D]">*</span>
+              2. Brief Issue Summary / Title <span className="text-[#B85D5D]">*</span>
             </label>
             <input
               id="title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Deep pothole causing skidding near bus stop"
-              maxLength={150}
+              placeholder="e.g. Uncovered drain creating flood hazard on 4th Main"
+              maxLength={140}
               required
               className="w-full px-4 py-2.5 rounded-lg border border-[#E3E7E8] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[44px]"
             />
           </div>
 
-          {/* Description */}
+          {/* 3. Detailed Problem Description */}
           <div className="space-y-1.5">
-            <label htmlFor="desc" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-              Detailed Description <span className="text-[#B85D5D]">*</span>
+            <label htmlFor="description" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
+              3. Problem Description <span className="text-[#B85D5D]">*</span>
             </label>
             <textarea
-              id="desc"
+              id="description"
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the issue, how long it has existed, and safety risks to pedestrians or traffic..."
+              placeholder="Describe the problem in detail: how long it has been present, immediate dangers to two-wheelers, children or pedestrians, and nearby landmarks..."
               required
               className="w-full px-4 py-2.5 rounded-lg border border-[#E3E7E8] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[100px]"
             />
+            <div className="text-[11px] text-[#687786] flex justify-between">
+              <span>Original text is preserved and never overwritten by AI.</span>
+              <span>{description.length}/500 chars</span>
+            </div>
           </div>
 
-          {/* Location & Interactive Coordinates */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="address" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-                Location & Landmarks
-              </label>
-              <span className="text-[11px] text-[#7189A4] flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5" />
-                Lat: {latitude.toFixed(4)}, Long: {longitude.toFixed(4)}
-              </span>
-            </div>
-            <input
-              id="address"
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Street name, landmark, building number..."
-              className="w-full px-4 py-2.5 rounded-lg border border-[#E3E7E8] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[44px]"
+          {/* 4. Interactive Leaflet Map Location Selection */}
+          <div className="space-y-3">
+            <LocationPicker
+              latitude={latitude}
+              longitude={longitude}
+              onLocationChange={handleLocationChange}
+              address={address}
             />
-            <div className="p-3 rounded-lg bg-[#F8F8F5] border border-[#E3E7E8] flex items-center justify-between text-xs text-[#687786]">
-              <div className="flex items-center gap-2">
-                <Compass className="w-4 h-4 text-[#7189A4]" />
-                <span>Geographic Pin: Indiranagar / Bangalore Urban Grid</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setLatitude(12.9716 + (Math.random() - 0.5) * 0.02);
-                  setLongitude(77.5946 + (Math.random() - 0.5) * 0.02);
-                }}
-                className="text-[#294563] font-semibold hover:underline text-[11px]"
-              >
-                Simulate Current GPS
-              </button>
+
+            <div className="space-y-1">
+              <label htmlFor="address" className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
+                Street Address or Landmark
+              </label>
+              <input
+                id="address"
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Shop number, cross road, apartment name or municipal ward..."
+                className="w-full px-4 py-2 rounded-lg border border-[#E3E7E8] bg-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#294563] min-h-[42px]"
+              />
             </div>
           </div>
 
-          {/* Photo Upload */}
+          {/* 5. Photograph Upload with Preview */}
           <div className="space-y-2">
-            <label className="block text-xs font-bold text-[#263442] uppercase tracking-wider">
-              Attach Photograph (Optional)
-            </label>
-            {imagePreview ? (
-              <div className="relative rounded-lg overflow-hidden border border-[#E3E7E8] max-h-60 bg-black/5">
-                <img
-                  src={imagePreview}
-                  alt="Upload preview"
-                  className="w-full h-48 object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={() => setImagePreview(null)}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80"
-                  aria-label="Remove image"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <label
-                htmlFor="photo-upload"
-                className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#E3E7E8] rounded-xl cursor-pointer hover:border-[#7189A4] hover:bg-[#F8F8F5] transition-all"
-              >
-                <UploadCloud className="w-8 h-8 text-[#7189A4] mb-2" />
-                <span className="text-xs font-semibold text-[#294563]">Click to upload or take a photo</span>
-                <span className="text-[11px] text-[#687786] mt-0.5">JPEG, PNG or WebP up to 5MB</span>
-                <input
-                  id="photo-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            )}
+            <ImageUploader
+              imageUrl={imageUrl}
+              onImageUploaded={(url) => setImageUrl(url)}
+            />
           </div>
 
+          {/* Error display */}
           {errorMessage && (
             <div className="p-3 rounded-lg bg-[#B85D5D]/10 border border-[#B85D5D]/30 text-xs text-[#B85D5D] flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -341,19 +385,19 @@ export const ReportPage: React.FC = () => {
           )}
 
           {/* Submit Action */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-xs text-[#687786]">
-              Submissions are public records. No sensitive passwords required.
-            </span>
+          <div className="pt-4 border-t border-[#E3E7E8] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-xs text-[#687786]">
+              Submissions generate an instant tracking token.
+            </div>
             <Button
               type="submit"
               size="lg"
               variant="primary"
               isLoading={isSubmitting}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto shadow-md"
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Submit Civic Report
+              Submit Complaint (Generate Token)
             </Button>
           </div>
         </form>

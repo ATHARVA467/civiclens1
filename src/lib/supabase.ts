@@ -68,3 +68,4 @@ export async function checkSupabaseConnection(): Promise<SupabaseHealth> {
     };
   }
 }
+

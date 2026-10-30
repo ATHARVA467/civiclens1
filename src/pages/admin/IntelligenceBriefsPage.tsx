@@ -210,3 +210,4 @@ export const IntelligenceBriefsPage: React.FC = () => {
     </div>
   );
 };
+

@@ -220,3 +220,4 @@ export const DuplicatesWorkbenchPage: React.FC = () => {
     </div>
   );
 };
+

@@ -59,3 +59,4 @@ export const LanguageToggle: React.FC<{ isDark?: boolean; className?: string }> 
     </div>
   );
 };
+

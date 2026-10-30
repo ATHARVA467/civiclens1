@@ -156,3 +156,4 @@ export const CategoryBadge: React.FC<{
     </span>
   );
 };
+

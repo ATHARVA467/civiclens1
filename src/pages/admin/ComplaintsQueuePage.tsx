@@ -248,3 +248,4 @@ export const ComplaintsQueuePage: React.FC = () => {
     </div>
   );
 };
+

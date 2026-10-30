@@ -77,3 +77,4 @@ export const HotspotsPage: React.FC = () => {
     </div>
   );
 };
+
