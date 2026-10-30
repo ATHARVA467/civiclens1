@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useI18n } from '@/lib/i18n';
 import { LanguageToggle } from '@/components/common/LanguageToggle';
 import { ConnectionStatusPill } from '@/components/common/ConnectionStatusPill';
+import { PlatformTourModal } from '@/components/common/PlatformTourModal';
 import { 
   Building2, 
   PlusCircle, 
@@ -12,7 +13,8 @@ import {
   Menu, 
   X,
   Compass,
-  ArrowRight
+  ArrowRight,
+  HelpCircle
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -20,6 +22,7 @@ export const CitizenLayout: React.FC = () => {
   const { t } = useI18n();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [tourOpen, setTourOpen] = React.useState(false);
 
   const navLinks = [
     { to: '/', label: t.navHome, icon: <Building2 className="w-4 h-4" /> },
@@ -39,6 +42,15 @@ export const CitizenLayout: React.FC = () => {
             <span className="hidden sm:inline text-white/70">| {t.tagline}</span>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setTourOpen(true)}
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-[11px] font-medium transition-colors border border-white/20"
+              title="Interactive Platform Walkthrough"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-[#8EA8C2]" />
+              <span>Platform Tour</span>
+            </button>
             <ConnectionStatusPill />
             <Link
               to="/admin/overview"
@@ -222,6 +234,9 @@ export const CitizenLayout: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Interactive Platform Tour Modal */}
+      <PlatformTourModal isOpen={tourOpen} onClose={() => setTourOpen(false)} />
     </div>
   );
 };

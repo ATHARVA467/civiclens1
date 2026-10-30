@@ -1,0 +1,17 @@
+{
+  "name": "CIVICLENS AI — Municipal Intelligence Platform",
+  "short_name": "CivicLens",
+  "description": "AI-powered civic grievance redressal and public issue resolution platform.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F8F5",
+  "theme_color": "#294563",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

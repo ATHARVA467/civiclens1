@@ -20,12 +20,14 @@ import {
 } from 'lucide-react';
 import { LanguageToggle } from '@/components/common/LanguageToggle';
 import { ConnectionStatusPill } from '@/components/common/ConnectionStatusPill';
+import { PlatformTourModal } from '@/components/common/PlatformTourModal';
 import { clsx } from 'clsx';
 
 export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
 
   const adminRoutes = [
     {
@@ -240,6 +242,14 @@ export const AdminLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setTourOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#8EA8C2] bg-[#1C2C3D] border border-[#304153] hover:bg-[#25394e] transition-colors"
+              title="Platform Guided Tour"
+            >
+              <span>Platform Tour</span>
+            </button>
             <ConnectionStatusPill isDark={true} />
             <LanguageToggle isDark={true} />
             <Link
@@ -257,6 +267,8 @@ export const AdminLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      <PlatformTourModal isOpen={tourOpen} onClose={() => setTourOpen(false)} />
     </div>
   );
 };
