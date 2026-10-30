@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-page: #F8F8F5;
+    --card-surface: #FFFFFF;
+    --text-primary: #263442;
+    --text-secondary: #687786;
+    --border-subtle: #E3E7E8;
+    --brand-navy: #294563;
+    --brand-slate: #7189A4;
+    --brand-sage: #7C9B85;
+    --color-success: #4F8665;
+    --color-warning: #B9853F;
+    --color-critical: #B85D5D;
+  }
+
+  .dark {
+    --bg-page: #111A24;
+    --card-surface: #1C2C3D;
+    --sidebar-surface: #172332;
+    --text-primary: #F3F5F6;
+    --text-secondary: #A8B5C1;
+    --border-subtle: #304153;
+    --brand-accent: #8EA8C2;
+    --color-success: #7C9B85;
+    --color-warning: #D1A15D;
+    --color-critical: #C77A7A;
+  }
+
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Accessibility: Focus rings */
+  *:focus-visible {
+    outline: 2px solid #294563;
+    outline-offset: 2px;
+  }
+
+  .dark *:focus-visible {
+    outline: 2px solid #8EA8C2;
+    outline-offset: 2px;
+  }
+}
+
+/* Soft Neumorphism utility styles */
+@layer components {
+  .soft-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E3E7E8;
+    box-shadow: 3px 3px 10px rgba(41, 69, 99, 0.04), -3px -3px 10px rgba(255, 255, 255, 0.9);
+    border-radius: 0.75rem;
+  }
+
+  .soft-card-elevated {
+    background-color: #FFFFFF;
+    border: 1px solid #E3E7E8;
+    box-shadow: 6px 6px 16px rgba(41, 69, 99, 0.06), -6px -6px 16px rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+  }
+
+  .soft-button {
+    background-color: #F8F8F5;
+    border: 1px solid #E3E7E8;
+    box-shadow: 2px 2px 6px rgba(41, 69, 99, 0.05), -2px -2px 6px rgba(255, 255, 255, 0.9);
+    transition: all 0.15s ease-in-out;
+  }
+
+  .soft-button:hover {
+    box-shadow: 1px 1px 3px rgba(41, 69, 99, 0.07), -1px -1px 3px rgba(255, 255, 255, 0.95);
+    background-color: #F0F2EF;
+  }
+
+  .soft-button:active {
+    box-shadow: inset 1px 1px 4px rgba(41, 69, 99, 0.08), inset -1px -1px 4px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Admin dark mode components */
+  .admin-panel {
+    background-color: #1C2C3D;
+    border: 1px solid #304153;
+    border-radius: 0.75rem;
+  }
+
+  .admin-panel-subtle {
+    background-color: #172332;
+    border: 1px solid #304153;
+    border-radius: 0.5rem;
+  }
+}
+
+/* Touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
