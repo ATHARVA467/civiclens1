@@ -5,3 +5,4 @@ Disallow: /admin/
 Disallow: /auth/callback
 
 Sitemap: https://civiclens-ai-nu.vercel.app/sitemap.xml
+
