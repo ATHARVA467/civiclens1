@@ -8,6 +8,14 @@ $$\text{CAPTURE} \longrightarrow \text{UNDERSTAND} \longrightarrow \text{REVEAL}
 
 ---
 
+## 🌐 Live Production Deployment
+
+* **Production URL:** [https://civiclens-ai-nu.vercel.app](https://civiclens-ai-nu.vercel.app)
+* **Vercel Project Dashboard:** [https://vercel.com/ace-02d4/civiclens-ai](https://vercel.com/ace-02d4/civiclens-ai)
+* **Deployment State:** `READY` (Production)
+
+---
+
 ## 🏛️ Application Architecture & Navigation
 
 The platform provides two integrated experiences:
