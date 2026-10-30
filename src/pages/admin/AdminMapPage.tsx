@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
-import { SYNTHETIC_REPORTS, SYNTHETIC_HOTSPOTS } from '@/lib/syntheticData';
+import { getAllReports } from '@/lib/reportsStorage';
+import { SYNTHETIC_HOTSPOTS } from '@/lib/syntheticData';
 import { Report, ReportCategory, PriorityBand } from '@/types';
 import { Card } from '@/components/common/Card';
 import { StatusBadge, PriorityBadge, CategoryBadge } from '@/components/common/Badges';
-import { MapPin, Filter, Flame, Eye, Layers } from 'lucide-react';
+import { MapPin, Filter, Flame, Eye, Layers, Send, RotateCw } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Link } from 'react-router-dom';
 
@@ -46,11 +47,20 @@ const createCustomIcon = (priority: PriorityBand) => {
 };
 
 export const AdminMapPage: React.FC = () => {
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
   const [showHotspots, setShowHotspots] = useState(true);
 
-  const filteredReports = SYNTHETIC_REPORTS.filter((r) => {
+  useEffect(() => {
+    getAllReports().then((data) => {
+      setReports(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const filteredReports = reports.filter((r) => {
     const catMatch = selectedCategory === 'all' || r.category === selectedCategory;
     const prioMatch = selectedPriority === 'all' || r.priority_band === selectedPriority;
     return catMatch && prioMatch;
@@ -66,10 +76,10 @@ export const AdminMapPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-[#F3F5F6] tracking-tight">
-            Geographic GIS Intelligence
+            Geographic GIS Intelligence & Cluster Map
           </h1>
           <p className="text-xs text-[#A8B5C1] mt-0.5">
-            Spatial distribution, priority pins and multi-report infrastructure clusters.
+            Spatial distribution of {reports.length} citizen grievances with DBSCAN hotspot boundary circles.
           </p>
         </div>
 
@@ -86,6 +96,7 @@ export const AdminMapPage: React.FC = () => {
             <option value="Streetlights">Streetlights</option>
             <option value="Water Supply">Water Supply</option>
             <option value="Electrical Hazards">Electrical Hazards</option>
+            <option value="Other Civic Issues">Other Civic Issues</option>
           </select>
 
           <select
@@ -119,78 +130,99 @@ export const AdminMapPage: React.FC = () => {
       {/* Leaflet Map Container */}
       <Card variant="admin" className="overflow-hidden p-1 border-[#304153]">
         <div className="h-[580px] w-full rounded-lg overflow-hidden relative z-0">
-          <MapContainer
-            center={[centerLat, centerLng]}
-            zoom={13}
-            scrollWheelZoom={true}
-            style={{ height: '100%', width: '100%' }}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+          {loading ? (
+            <div className="h-full flex items-center justify-center text-[#A8B5C1] space-x-2">
+              <RotateCw className="w-6 h-6 animate-spin text-[#8EA8C2]" />
+              <span className="text-xs">Loading GIS coordinates...</span>
+            </div>
+          ) : (
+            <MapContainer
+              center={[centerLat, centerLng]}
+              zoom={13}
+              scrollWheelZoom={true}
+              style={{ height: '100%', width: '100%' }}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
-            {/* Hotspots overlay circles */}
-            {showHotspots &&
-              SYNTHETIC_HOTSPOTS.map((hotspot) => (
-                <Circle
-                  key={hotspot.id}
-                  center={[hotspot.latitude, hotspot.longitude]}
-                  radius={hotspot.radius_meters}
-                  pathOptions={{
-                    color: hotspot.severity === 'critical' ? '#C77A7A' : '#D1A15D',
-                    fillColor: hotspot.severity === 'critical' ? '#C77A7A' : '#D1A15D',
-                    fillOpacity: 0.25,
-                    weight: 2,
-                    dashArray: '4, 4'
-                  }}
+              {/* Hotspots overlay circles */}
+              {showHotspots &&
+                SYNTHETIC_HOTSPOTS.map((hotspot) => (
+                  <Circle
+                    key={hotspot.id}
+                    center={[hotspot.latitude, hotspot.longitude]}
+                    radius={hotspot.radius_meters}
+                    pathOptions={{
+                      color: hotspot.severity === 'critical' ? '#C77A7A' : '#D1A15D',
+                      fillColor: hotspot.severity === 'critical' ? '#C77A7A' : '#D1A15D',
+                      fillOpacity: 0.25,
+                      weight: 2,
+                      dashArray: '4, 4'
+                    }}
+                  >
+                    <Popup>
+                      <div className="text-xs space-y-1.5 p-1 max-w-xs text-[#263442]">
+                        <div className="font-bold flex items-center gap-1 text-rose-700">
+                          <Flame className="w-3.5 h-3.5" />
+                          <span>{hotspot.name}</span>
+                        </div>
+                        <p className="text-gray-700 leading-snug">{hotspot.ai_brief_summary}</p>
+                        <div className="pt-1 text-[11px] font-semibold text-[#294563]">
+                          Density: {hotspot.report_count} clustered grievances within {hotspot.radius_meters}m
+                        </div>
+                        <div className="pt-1 border-t border-gray-200">
+                          <Link to="/admin/intelligence" className="text-rose-700 font-bold hover:underline">
+                            Open AI Action Brief →
+                          </Link>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Circle>
+                ))}
+
+              {/* Individual Report Pins */}
+              {filteredReports.map((report) => (
+                <Marker
+                  key={report.id}
+                  position={[report.latitude, report.longitude]}
+                  icon={createCustomIcon(report.priority_band)}
                 >
                   <Popup>
-                    <div className="text-xs space-y-1 p-1 max-w-xs">
-                      <div className="font-bold text-[#294563] flex items-center gap-1">
-                        <Flame className="w-3.5 h-3.5 text-rose-600" />
-                        <span>{hotspot.name}</span>
+                    <div className="text-xs space-y-2 p-1 max-w-xs text-[#263442]">
+                      <div className="flex items-center justify-between font-mono font-bold">
+                        <span className="text-[#294563]">{report.tracking_token}</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-gray-100 font-sans">
+                          {report.priority_band}
+                        </span>
                       </div>
-                      <p className="text-gray-700 leading-snug">{hotspot.ai_brief_summary}</p>
-                      <div className="pt-1 text-[11px] font-semibold text-rose-700">
-                        Density: {hotspot.report_count} clustered grievances
+                      <div className="font-bold text-gray-900">{report.title}</div>
+                      <p className="text-gray-600 text-[11px] line-clamp-2">{report.description}</p>
+                      <div className="text-gray-500 text-[10px] flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-gray-400" />
+                        <span>{report.address}</span>
+                      </div>
+                      <div className="pt-2 border-t border-gray-200 flex items-center justify-between">
+                        <Link
+                          to={`/track/${report.tracking_token}`}
+                          className="text-[#294563] font-bold text-[11px] hover:underline"
+                        >
+                          Citizen Dossier →
+                        </Link>
+                        <Link
+                          to="/admin/assignments"
+                          className="text-[#7C9B85] font-bold text-[11px] hover:underline"
+                        >
+                          Assign Dept →
+                        </Link>
                       </div>
                     </div>
                   </Popup>
-                </Circle>
+                </Marker>
               ))}
-
-            {/* Individual Report Pins */}
-            {filteredReports.map((report) => (
-              <Marker
-                key={report.id}
-                position={[report.latitude, report.longitude]}
-                icon={createCustomIcon(report.priority_band)}
-              >
-                <Popup>
-                  <div className="text-xs space-y-2 p-1 max-w-xs">
-                    <div className="flex items-center gap-1 font-mono font-bold text-[#294563]">
-                      <span>{report.tracking_token}</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-gray-100 font-sans">
-                        {report.priority_band}
-                      </span>
-                    </div>
-                    <div className="font-semibold text-gray-900">{report.title}</div>
-                    <p className="text-gray-600 text-[11px] line-clamp-2">{report.description}</p>
-                    <div className="text-gray-500 text-[10px]">{report.address}</div>
-                    <div className="pt-1 border-t border-gray-200">
-                      <Link
-                        to={`/track/${report.tracking_token}`}
-                        className="text-[#294563] font-bold text-[11px] hover:underline"
-                      >
-                        Inspect Full Dossier →
-                      </Link>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-          </MapContainer>
+            </MapContainer>
+          )}
         </div>
       </Card>
 
@@ -231,4 +263,3 @@ export const AdminMapPage: React.FC = () => {
     </div>
   );
 };
-
